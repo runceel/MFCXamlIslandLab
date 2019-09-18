@@ -36,6 +36,9 @@ public:
 
 protected:
 
+private:
+	winrt::Windows::UI::Xaml::Hosting::DesktopWindowXamlSource desktopSource{ nullptr };
+
 // Generated message map functions
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -43,6 +46,9 @@ protected:
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()	
+public:
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnDestroy();
 };
 
 #ifndef _DEBUG  // debug version in MFCApplication3View.cpp

@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(CMFCApplication3View, CView)
 	ON_WM_CREATE()
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_SIZE()
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 // CMFCApplication3View construction/destruction
@@ -64,13 +66,13 @@ int CMFCApplication3View::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	DesktopWindowXamlSource desktopSource;
+	desktopSource = DesktopWindowXamlSource();
 	auto interop = desktopSource.as<IDesktopWindowXamlSourceNative>();
 	check_hresult(interop->AttachToWindow(this->GetSafeHwnd()));
 
 	HWND hWndXamlIsland = nullptr;
 	interop->get_WindowHandle(&hWndXamlIsland);
-	auto result = ::SetWindowPos(this->GetSafeHwnd(), hWndXamlIsland, 100, 100, 500, 500, SWP_SHOWWINDOW);
+	auto result = ::SetWindowPos(hWndXamlIsland, 0, 100, 300, 1800, 300, SWP_SHOWWINDOW);
 	if (!result)
 	{
 		DWORD errorcode = GetLastError();
@@ -89,27 +91,39 @@ int CMFCApplication3View::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	//Windows::UI::Xaml::Controls::TreeView treeView;
-	//Windows::UI::Xaml::Controls::TreeViewNode rootNode;
-	//rootNode.Content(winrt::box_value(L"Hello TreeView on MFC"));
-	//auto rootNodes = treeView.RootNodes();
-	//rootNodes.Append(rootNode);
+	Windows::UI::Xaml::Controls::TreeView treeView;
+	Windows::UI::Xaml::Controls::TreeViewNode rootNode;
+	Windows::UI::Xaml::Controls::TextBlock rootNodeText;
+	rootNodeText.Text(L"Hello TreeView on MFC");
+	rootNode.Content(rootNodeText);
+	Windows::UI::Xaml::Controls::TreeViewNode childNode1;
+	Windows::UI::Xaml::Controls::TextBlock childNode1Text;
+	childNode1Text.Text(L"Child 1");
+	childNode1.Content(childNode1Text);
+	Windows::UI::Xaml::Controls::TreeViewNode childNode2;
+	Windows::UI::Xaml::Controls::TextBlock childNode2Text;
+	childNode2Text.Text(L"Child 2");
+	childNode2.Content(childNode2Text);
 
-	//desktopSource.Content(treeView);
+	rootNode.Children().Append(childNode1);
+	rootNode.Children().Append(childNode2);
+	treeView.RootNodes().Append(rootNode);
+	treeView.UpdateLayout();
+	desktopSource.Content(treeView);
 	
 	//Creating the Xaml content
-	Windows::UI::Xaml::Controls::StackPanel xamlContainer;
-	xamlContainer.Background(Windows::UI::Xaml::Media::SolidColorBrush{ Windows::UI::Colors::LightGray() });
+	//Windows::UI::Xaml::Controls::StackPanel xamlContainer;
+	//xamlContainer.Background(Windows::UI::Xaml::Media::SolidColorBrush{ Windows::UI::Colors::LightGray() });
 
-	Windows::UI::Xaml::Controls::TextBlock tb;
-	tb.Text(L"Hello World from Xaml Islands!");
-	tb.VerticalAlignment(Windows::UI::Xaml::VerticalAlignment::Center);
-	tb.HorizontalAlignment(Windows::UI::Xaml::HorizontalAlignment::Center);
-	tb.FontSize(48);
+	//Windows::UI::Xaml::Controls::TextBlock tb;
+	//tb.Text(L"Hello World from Xaml Islands!");
+	//tb.VerticalAlignment(Windows::UI::Xaml::VerticalAlignment::Center);
+	//tb.HorizontalAlignment(Windows::UI::Xaml::HorizontalAlignment::Center);
+	//tb.FontSize(48);
 
-	xamlContainer.Children().Append(tb);
-	xamlContainer.UpdateLayout();
-	desktopSource.Content(xamlContainer);
+	//xamlContainer.Children().Append(tb);
+	//xamlContainer.UpdateLayout();
+	//desktopSource.Content(xamlContainer);
 
 	return 0;
 }
@@ -188,3 +202,15 @@ CMFCApplication3Doc* CMFCApplication3View::GetDocument() const // non-debug vers
 
 
 // CMFCApplication3View message handlers
+
+
+void CMFCApplication3View::OnSize(UINT nType, int cx, int cy)
+{
+	CView::OnSize(nType, cx, cy);
+}
+
+
+void CMFCApplication3View::OnDestroy()
+{
+	CView::OnDestroy();
+}
